@@ -1,4 +1,5 @@
 import { DividendsOutput } from "./helpers/DividendsOutput";
+import { Errors } from "./helpers/enums";
 import InputReader from "./helpers/InputReader";
 import { BettingHost } from "./models/BettingHost";
 
@@ -8,7 +9,7 @@ const main = async () => {
     await InputReader.readStdIn(bh);
     const result = bh.getResult();
     if (!result) {
-      throw "Invalid result found";
+      throw Errors.NO_RESULT;
     }
     DividendsOutput.printResults(bh);
   } catch (error) {

@@ -1,12 +1,14 @@
 import { BettingHost } from "../models/BettingHost";
+import { Errors } from "./enums";
 
 export class DividendsOutput {
   static printResults = (bettingHost: BettingHost): void => {
     try {
       const results = bettingHost.getResult();
       if (!results) {
-          throw "No Results detected";
+        throw Errors.NO_RESULT;
       }
+
       const first = results.getFirst().getHorseNo();
       const second = results.getSecond().getHorseNo();
       const third = results.getThird().getHorseNo();
@@ -29,9 +31,11 @@ export class DividendsOutput {
         console.log(`Place:${resultsArr[i]}:$${placeDividend[i]}`);
       }
       // Print Exacta Dividends
-      console.log(`Exacta:${resultsArr[0]},${resultsArr[1]}:$${exactaDividend[0]}`)
+      console.log(
+        `Exacta:${resultsArr[0]},${resultsArr[1]}:$${exactaDividend[0]}`
+      );
     } catch (error) {
-        console.error(error);
+      console.error(error);
     }
   };
 }

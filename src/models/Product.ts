@@ -1,4 +1,4 @@
-import { ProductType } from "../helpers/enums";
+import { Errors, ProductType } from "../helpers/enums";
 import Bet from "./Bet";
 import Result from "./Result";
 
@@ -58,6 +58,7 @@ export class Win extends Product {
           stakes += bet.getStake();
         }
       });
+
       const dividend = Math.round((remaining / stakes) * 100) / 100;
       dividendRes.push(dividend);
     } catch (error) {
@@ -83,8 +84,9 @@ export class Place extends Product {
   calculateDividend = (result: Result): number[] => {
     const dividendRes: number[] = [];
     try {
-      // Take Commission
+      // Take Commission, then divide by 3 as pools between each place is even
       const remaining = (this.pool * (1 - this.commission)) / 3;
+      // Compile stakes of bets that bet on the top 3 horses
       let stakesFirst = 0;
       let stakesSecond = 0;
       let stakesThird = 0;
@@ -101,6 +103,7 @@ export class Place extends Product {
           stakesThird += bet.getStake();
         }
       });
+
       const dividendFirst = Math.round((remaining / stakesFirst) * 100) / 100;
       const dividendSecond = Math.round((remaining / stakesSecond) * 100) / 100;
       const dividendThird = Math.round((remaining / stakesThird) * 100) / 100;
@@ -130,19 +133,22 @@ export class Exacta extends Product {
     try {
       // Take Commission
       const remaining = this.pool * (1 - this.commission);
+      // Compile stakes of bets that bet on the winning and penultimate horses
       let stakes = 0;
       const firstHorse = result.getFirst().getHorseNo();
       const secondHorse = result.getSecond().getHorseNo();
       this.bets.forEach((bet) => {
         const horseFirstNo = bet.getSelection().getHorseNo();
         if (!bet.getSelectionExacta()) {
-          throw "Invalid Bet found";
+          throw Errors.INVALID_BET;
         }
+
         const horseSecondNo = bet.getSelectionExacta()!.getHorseNo();
         if (horseFirstNo === firstHorse && horseSecondNo === secondHorse) {
           stakes += bet.getStake();
         }
       });
+
       const dividend = Math.round((remaining / stakes) * 100) / 100;
       dividendRes.push(dividend);
     } catch (error) {

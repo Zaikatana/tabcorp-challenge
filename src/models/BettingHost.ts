@@ -1,4 +1,4 @@
-import { ProductType } from "../helpers/enums";
+import { Errors, ProductType } from "../helpers/enums";
 import Bet from "./Bet";
 import Horse from "./Horse";
 import { Exacta, Place, Win } from "./Product";
@@ -31,7 +31,7 @@ export class BettingHost {
       } else if (bet.getProductType() === ProductType.EXACTA) {
         this.exacta.addToBet(bet);
       } else {
-        throw "Invalid Product Type Detected";
+        throw Errors.INVALID_PRODUCT_TYPE;
       }
     } catch (error) {
       console.error(error);
@@ -39,8 +39,12 @@ export class BettingHost {
   };
 
   addHorse = (selection: number): void => {
-    const horse = new Horse(selection);
-    this.horses.push(horse);
+    try {
+      const horse = new Horse(selection);
+      this.horses.push(horse);
+    } catch (error) {
+      console.error(error);
+    }
   };
   getHorse = (selection: number): Horse | null => {
     for (let i = 0; i < this.horses.length; i++) {
